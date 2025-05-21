@@ -2,6 +2,7 @@ package br.com.cotiinformatica.entities;
 
 import java.util.Date;
 import java.util.UUID;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -14,6 +15,7 @@ import jakarta.persistence.TemporalType;
 @Entity
 @Table(name = "tb_tarefa")
 public class Tarefa {
+
 	@Id
 	@Column
 	private UUID id;
@@ -84,4 +86,5 @@ public class Tarefa {
 	public void setCategoria(Categoria categoria) {
 		this.categoria = categoria;
 	}
+
 }

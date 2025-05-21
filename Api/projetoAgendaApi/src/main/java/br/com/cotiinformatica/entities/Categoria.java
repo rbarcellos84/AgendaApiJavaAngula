@@ -2,6 +2,7 @@ package br.com.cotiinformatica.entities;
 
 import java.util.List;
 import java.util.UUID;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -11,6 +12,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "tb_categoria")
 public class Categoria {
+
 	@Id
 	@Column
 	private UUID id;
@@ -55,4 +57,5 @@ public class Categoria {
 	public void setTarefas(List<Tarefa> tarefas) {
 		this.tarefas = tarefas;
 	}
+
 }
