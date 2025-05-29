@@ -12,12 +12,11 @@ import br.com.cotiinformatica.entities.Categoria;
 @Repository
 public interface CategoriaRepository extends JpaRepository<Categoria, UUID> {
 
-	 /*
+	/*
 	 * Método para consultar todas as categorias e retorna-las em ordem alfabética
 	 * (nome) JPQL -> Sintaxe / linguagem utilizada para escrever as consultas que
 	 * serão feitas no banco de dados pelo Spring Data JPA
 	 */
-
 	@Query("""
 			SELECT c FROM Categoria c
 			ORDER BY c.nome ASC
