@@ -1,8 +1,8 @@
 <div>
     <div class="card shadow w-100">
         <div class="card-header bg-light text-dark">
-            <h4 class="card-title">Cadastro de Tarefas</h4>
-            <p class="card-subtitle">Preencha o formulário para incluir uma tarefa.</p>
+            <h4 class="card-title">Edição de Tarefas</h4>
+            <p class="card-subtitle">Utilize o formulário para alterar uma tarefa.</p>
         </div>
         <div class="card-body">
 
@@ -29,6 +29,7 @@
                             Por favor, informe no máximo 150 caracteres no título da tarefa.
                         </div>
                     </div>
+
                 </div>
 
                 <div class="mb-3">
@@ -86,9 +87,17 @@
                             Por favor, selecione a categoria desejada para a tarefa.
                         </div>
                     </div>
+
                 </div>
 
-                <button type="submit" class="btn btn-outline-primary" [disabled]="form.invalid">Realizar Cadastro</button>
+                <div class="d-flex justify-content-start gap-2">
+                    <button type="submit" class="btn btn-outline-primary" [disabled]="form.invalid">
+                        Salvar Alterações
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" (click)="onVoltar()">
+                        Voltar
+                    </button>
+                </div>
             </form>
         </div>
     </div>

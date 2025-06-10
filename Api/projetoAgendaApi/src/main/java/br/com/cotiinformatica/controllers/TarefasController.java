@@ -34,54 +34,51 @@ import jakarta.validation.Valid;
 @Tag(name = "Tarefas", description = "Serviço para operações relacionadas a tarefas.")
 public class TarefasController {
 
-	// Injeção de dependência (autoinicialização de um objeto)
-	@Autowired
-	TarefaRepository tarefaRepository;
-	@Autowired
-	CategoriaRepository categoriaRepository;
-	@Autowired
-	ModelMapper mapper;
-
+	//Injeção de dependência (autoinicialização de um objeto)
+	@Autowired TarefaRepository tarefaRepository;
+	@Autowired CategoriaRepository categoriaRepository;
+	@Autowired ModelMapper mapper;
+	
 	@Operation(summary = "Cadastro de tarefa", description = "Cria uma nova tarefa no banco de dados.")
 	@PostMapping
 	public TarefaResponseDto post(@RequestBody @Valid TarefaRequestDto request) {
-
-		// buscar a categoria no banco de dados através do ID
+		
+		//buscar a categoria no banco de dados através do ID
 		var categoria = categoriaRepository.findById(request.getCategoriaId())
-				.orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada. Verifique o ID informado."));
-
-		var tarefa = mapper.map(request, Tarefa.class); // Copiar os dados do request DTO para a entidade
-		tarefa.setId(UUID.randomUUID()); // gerando um ID para a tarefa
-		tarefa.setCategoria(categoria); // associando a tarefa com a categoria
-
-		// gravar a tarefa no banco de dados
+							.orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada. Verifique o ID informado."));
+				
+		var tarefa = mapper.map(request, Tarefa.class); //Copiar os dados do request DTO para a entidade
+		tarefa.setId(UUID.randomUUID()); //gerando um ID para a tarefa
+		tarefa.setCategoria(categoria); //associando a tarefa com a categoria
+				
+		//gravar a tarefa no banco de dados
 		tarefaRepository.save(tarefa);
-
-		// copiar os dados da tarefa cadastrada para a classe 'TarefaResponseDto'
+		
+		//copiar os dados da tarefa cadastrada para a classe 'TarefaResponseDto'
 		return mapper.map(tarefa, TarefaResponseDto.class);
 	}
 
 	@Operation(summary = "Edição de tarefa", description = "Atualiza os dados de uma tarefa no banco de dados.")
 	@PutMapping("{id}")
 	public TarefaResponseDto put(@PathVariable UUID id, @RequestBody @Valid TarefaRequestDto request) {
-
-		// verificar se a tarefa não existe no banco de dados (através do id informado)
-		if (!tarefaRepository.existsById(id))
+		
+		//verificar se a tarefa não existe no banco de dados (através do id informado)
+		if(!tarefaRepository.existsById(id))
 			throw new IllegalArgumentException("Tarefa não encontrado. Verifique o ID informado.");
-
-		// buscar a categoria no banco de dados através do ID
+		
+		//buscar a categoria no banco de dados através do ID
 		var categoria = categoriaRepository.findById(request.getCategoriaId())
-				.orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada. Verifique o ID informado."));
-
-		// copiar os dados do request para a entidade
+							.orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada. Verifique o ID informado."));
+		
+		//copiar os dados do request para a entidade
 		var tarefa = mapper.map(request, Tarefa.class);
-		tarefa.setId(id); // capturando o id enviado da tarefa
-		tarefa.setCategoria(categoria); // associando a tarefa com a categoria
-
-		// atualizando a tarefa no banco de dados
+		tarefa.setId(id); //capturando o id enviado da tarefa
+		tarefa.setCategoria(categoria); //associando a tarefa com a categoria
+		
+		//atualizando a tarefa no banco de dados
 		tarefaRepository.save(tarefa);
-
-		// copiar os dados da tarefa cadastrada para a classe 'TarefaResponseDto'
+		
+		//copiar os dados da tarefa cadastrada para a classe 'TarefaResponseDto'
 		return mapper.map(tarefa, TarefaResponseDto.class);
 	}
 
@@ -89,46 +86,53 @@ public class TarefasController {
 	@DeleteMapping("{id}")
 	public TarefaResponseDto delete(@PathVariable UUID id) {
 
-		// buscar a tarefa no banco de dados através do ID
+		//buscar a tarefa no banco de dados através do ID
 		var tarefa = tarefaRepository.findById(id)
-				.orElseThrow(() -> new IllegalArgumentException("Tarefa não encontrado. Verifique o ID informado."));
-
-		// excluindo a tarefa
-		tarefaRepository.delete(tarefa);
-
-		// copiar os dados da tarefa cadastrada para a classe 'TarefaResponseDto'
+						.orElseThrow(() -> new IllegalArgumentException("Tarefa não encontrado. Verifique o ID informado."));
+		
+		//excluindo a tarefa
+		tarefaRepository.delete(tarefa);		
+		
+		//copiar os dados da tarefa cadastrada para a classe 'TarefaResponseDto'
 		return mapper.map(tarefa, TarefaResponseDto.class);
 	}
 
 	@Operation(summary = "Consulta de tarefas", description = "Retorna todas as tarefas cadastradas no banco de dados.")
 	@GetMapping("{dataMin}/{dataMax}")
-	public List<TarefaResponseDto> get(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataMin,
-			@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataMax) {
-
-		var inicio = dataMin.atStartOfDay(); // A primeira data deve ficar com a hora 00:00:00
-		var fim = dataMax.atTime(LocalTime.MAX); // A ultima data deve ficar com a hora 23:59:59
-
-		// converter para o padrão Date (java.util)
+	public List<TarefaResponseDto> get(
+			@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataMin,
+			@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataMax
+			) {
+		
+		var inicio = dataMin.atStartOfDay(); //A primeira data deve ficar com a hora 00:00:00
+		var fim = dataMax.atTime(LocalTime.MAX); //A ultima data deve ficar com a hora 23:59:59
+		
+		//converter para o padrão Date (java.util)
 		var dataInicio = Date.from(inicio.atZone(ZoneId.systemDefault()).toInstant());
 		var dataFim = Date.from(fim.atZone(ZoneId.systemDefault()).toInstant());
-
-		// consultando as tarefas no banco de dados
+		
+		//consultando as tarefas no banco de dados
 		var tarefas = tarefaRepository.findByDatas(dataInicio, dataFim);
-
-		// usando o modelmapper para copiar os dados da lista de tarefas para a lista de
-		// TarefaResponseDto
-		return tarefas.stream().map(tarefa -> mapper.map(tarefa, TarefaResponseDto.class)).collect(Collectors.toList());
-	}
-
+		
+		//usando o modelmapper para copiar os dados da lista de tarefas para a lista de TarefaResponseDto
+		return tarefas.stream()
+				.map(tarefa -> mapper.map(tarefa, TarefaResponseDto.class))
+				.collect(Collectors.toList());
+	}	
+	
 	@Operation(summary = "Consulta de tarefa por Id", description = "Retorna os dados de 1 tarefa do banco de dados.")
 	@GetMapping("{id}")
 	public TarefaResponseDto get(@PathVariable UUID id) {
-
-		// buscar a tarefa no banco de dados através do ID
+		
+		//buscar a tarefa no banco de dados através do ID
 		var tarefa = tarefaRepository.findById(id)
-				.orElseThrow(() -> new IllegalArgumentException("Tarefa não encontrado. Verifique o ID informado."));
-
-		// copiar os dados da tarefa cadastrada para a classe 'TarefaResponseDto'
+						.orElseThrow(() -> new IllegalArgumentException("Tarefa não encontrado. Verifique o ID informado."));
+		
+		//copiar os dados da tarefa cadastrada para a classe 'TarefaResponseDto'
 		return mapper.map(tarefa, TarefaResponseDto.class);
 	}
 }
+
+
+
+

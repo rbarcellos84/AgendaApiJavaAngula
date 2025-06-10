@@ -16,58 +16,64 @@ import br.com.cotiinformatica.entities.Tarefa;
 @Configuration
 public class ModelMapperConfiguration {
 
-	@Bean
-	public ModelMapper modelMapper() {
+    @Bean
+    public ModelMapper modelMapper() {
+    	
+        var mapper = new ModelMapper(); //instanciando o ModelMapper
 
-		var mapper = new ModelMapper(); // instanciando o ModelMapper
+        //Configurando a cópia dos dados de 'TarefaRequestDto' para 'Tarefa'
+        mapper.addMappings(new PropertyMap<TarefaRequestDto, Tarefa>() {
+            @Override
+            protected void configure() {
+               
+                map().setTitulo(source.getTitulo());
+                map().setFinalizado(source.getFinalizado());
 
-		// Configurando a cópia dos dados de 'TarefaRequestDto' para 'Tarefa'
-		mapper.addMappings(new PropertyMap<TarefaRequestDto, Tarefa>() {
-			@Override
-			protected void configure() {
+                using(ctx -> {
+                    try {
+                        String data = ((TarefaRequestDto) ctx.getSource()).getData();
+                        String hora = ((TarefaRequestDto) ctx.getSource()).getHora();
+                        return new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(data + " " + hora);
+                    } catch (Exception e) {
+                        return null;
+                    }
+                }).map(source, destination.getDataHora());
 
-				map().setTitulo(source.getTitulo());
-				map().setFinalizado(source.getFinalizado());
+                using(ctx -> {
+                    Categoria categoria = new Categoria();
+                    categoria.setId(((TarefaRequestDto) ctx.getSource()).getCategoriaId());
+                    return categoria;
+                }).map(source, destination.getCategoria());
+            }
+        });
+        
+      //Configurando a cópia dos dados de 'Tarefa' para 'TarefaResponseDto'
+        mapper.addMappings(new PropertyMap<Tarefa, TarefaResponseDto>() {
+            @Override
+            protected void configure() {
+            	
+                map().setId(source.getId());
+                map().setTitulo(source.getTitulo());
+                map().setFinalizado(source.getFinalizado());
 
-				using(ctx -> {
-					try {
-						String data = ((TarefaRequestDto) ctx.getSource()).getData();
-						String hora = ((TarefaRequestDto) ctx.getSource()).getHora();
-						return new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(data + " " + hora);
-					} catch (Exception e) {
-						return null;
-					}
-				}).map(source, destination.getDataHora());
+                using(ctx -> {
+                    Date dataHora = (Date) ctx.getSource();
+                    return new java.text.SimpleDateFormat("yyyy-MM-dd").format(dataHora);
+                }).map(source.getDataHora(), destination.getData());
 
-				using(ctx -> {
-					Categoria categoria = new Categoria();
-					categoria.setId(((TarefaRequestDto) ctx.getSource()).getCategoriaId());
-					return categoria;
-				}).map(source, destination.getCategoria());
-			}
-		});
+                using(ctx -> {
+                    Date dataHora = (Date) ctx.getSource();
+                    return new java.text.SimpleDateFormat("HH:mm").format(dataHora);
+                }).map(source.getDataHora(), destination.getHora());
+            }
+        });
 
-		// Configurando a cópia dos dados de 'Tarefa' para 'TarefaResponseDto'
-		mapper.addMappings(new PropertyMap<Tarefa, TarefaResponseDto>() {
-			@Override
-			protected void configure() {
-
-				map().setId(source.getId());
-				map().setTitulo(source.getTitulo());
-				map().setFinalizado(source.getFinalizado());
-
-				using(ctx -> {
-					Date dataHora = (Date) ctx.getSource();
-					return new java.text.SimpleDateFormat("yyyy-MM-dd").format(dataHora);
-				}).map(source.getDataHora(), destination.getData());
-
-				using(ctx -> {
-					Date dataHora = (Date) ctx.getSource();
-					return new java.text.SimpleDateFormat("HH:mm").format(dataHora);
-				}).map(source.getDataHora(), destination.getHora());
-			}
-		});
-
-		return mapper;
-	}
+        return mapper;
+    }
 }
+
+
+
+
+
+
