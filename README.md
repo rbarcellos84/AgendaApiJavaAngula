@@ -1,4 +1,4 @@
-# Estudando java (spring boot) com angular 19 AgendaApiJavaAngula Desenvolvimento (CRUD)
+# Estudando de caso em java (spring boot) com angular 19 AgendaApiJavaAngula (CRUD)
 
 AgendaApiJavaAngula
 
@@ -7,10 +7,12 @@ Tecnologias Empregadas
 
 O projeto AgendaApiJavaAngula é desenvolvido utilizando um stack tecnológico diversificado, refletindo a natureza de uma aplicação full-stack:
 
-    Java (35.9%): Linguagem principal para o desenvolvimento do backend (API).
-    TypeScript (34.2%): Linguagem de programação para o desenvolvimento do frontend (Angular).
-    HTML (29.3%): Utilizado para a estruturação das páginas web na interface do usuário.
-    CSS (0.6%): Empregado para a estilização e design visual da aplicação web.
+    Java (microserviço) spring boot: 
+        Linguagem principal para o desenvolvimento do backend (API).
+    Angular
+        TypeScript: Linguagem de programação para o desenvolvimento do frontend (Angular).
+        HTML: Utilizado para a estruturação das páginas web na interface do usuário.
+        CSS: Empregado para a estilização e design visual da aplicação web.
 
 Esta combinação indica uma abordagem comum para aplicações modernas, onde Java é utilizado para a lógica de negócio e persistência de dados no servidor, e Angular/TypeScript para uma experiência de usuário rica e dinâmica no cliente.
 Estrutura do Projeto
